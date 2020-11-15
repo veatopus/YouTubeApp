@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@id/playListsFragment">
+
+    <fragment
+        android:id="@+id/playListsFragment"
+        android:name="kg.geektech.ruslan.youtubeapp.ui.playlists.PlaylistsFragment"
+        android:label="play_lists_fragment"
+        tools:layout="@layout/playlists_fragment" />
+    <fragment
+        android:id="@+id/playlistInfoFragment"
+        android:name="kg.geektech.ruslan.youtubeapp.ui.playlist_info.PlaylistInfoFragment"
+        android:label="PlaylistInfoFragment" />
+
+</navigation>

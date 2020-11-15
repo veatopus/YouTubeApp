@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">YouTubeApp</string>
+    <string name="playlist_hint_hint">playlist</string>
+    <string name="playlist_name_example">Emotional Well-being &amp; Healing Practices for Children</string>
+    <string name="amount_video_example">32 video series</string>
+    <string name="playlist_description_example">In this series, we break down the impact of displacement, instability, violence, and trauma in children, and offer exercises to support children in their healing journey.</string>
 </resources>
