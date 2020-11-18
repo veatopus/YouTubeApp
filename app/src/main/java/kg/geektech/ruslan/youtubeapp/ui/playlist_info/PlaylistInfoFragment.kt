@@ -18,11 +18,11 @@ import kotlinx.android.synthetic.main.content_scrolling.*
 import kotlinx.android.synthetic.main.item_playlist.view.*
 import kotlinx.android.synthetic.main.playlist_info_fragment.*
 
-class PlaylistInfoFragment : Fragment(), BaseAdapter.IBaseAdapterCallBack<Item>,
+class PlaylistInfoFragment : Fragment(),
     BaseAdapter.IBaseAdapterClickListener {
     private lateinit var mViewModel: PlaylistInfoViewModel
     private var playListId: String? = null
-    private val adapter = BaseAdapter(R.layout.item_playlist, mutableListOf(), this)
+    private val adapter = BaseAdapter(R.layout.item_playlist, mutableListOf(), this::onBind)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,7 +45,7 @@ class PlaylistInfoFragment : Fragment(), BaseAdapter.IBaseAdapterCallBack<Item>,
     }
 
     private fun setUpRecycler() {
-        adapter.setListener(this)
+        adapter.listener = this
         playListsInfoFragment_recyclerview.adapter = adapter
         playListId?.let { it ->
             mViewModel.fetchPlaylistById(it).observe(requireActivity(), Observer {
@@ -66,7 +66,7 @@ class PlaylistInfoFragment : Fragment(), BaseAdapter.IBaseAdapterCallBack<Item>,
 
     }
 
-    override fun onBind(view: View, model: Item) {
+    private fun onBind(view: View, model: Item) {
         view.item_playlist_text_view_hint.gone()
         view.item_playlist_text_view_title_playList.text = model.snippet.title
         view.item_playlist_text_view_amount_video.text = model.snippet.description

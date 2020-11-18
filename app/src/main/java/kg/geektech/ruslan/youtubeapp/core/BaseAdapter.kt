@@ -8,15 +8,11 @@ import androidx.recyclerview.widget.RecyclerView
 class BaseAdapter<T>(
     private val holderLayoutId: Int,
     var data: MutableList<T>,
-    val baseAdapterCallBack: IBaseAdapterCallBack<T>
+    private var onBind: (v: View,T) -> Unit
 ) :
     RecyclerView.Adapter<BaseAdapter<T>.BaseViewHolder>() {
 
-    private var listener: IBaseAdapterClickListener? = null
-
-    fun setListener(listener: IBaseAdapterClickListener) {
-        this.listener = listener
-    }
+    var listener: IBaseAdapterClickListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
         return BaseViewHolder(
@@ -35,18 +31,13 @@ class BaseAdapter<T>(
     inner class BaseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         fun onBind(model: T) {
-            baseAdapterCallBack.onBind(itemView, model)
+            onBind(itemView, model)
 
             itemView.setOnClickListener {
                 listener?.onClick(adapterPosition)
             }
         }
     }
-
-    interface IBaseAdapterCallBack<T> {
-        fun onBind(view: View, model: T)
-    }
-
     interface IBaseAdapterClickListener {
         fun onClick(pos: Int)
     }
