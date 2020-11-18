@@ -9,40 +9,45 @@
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/app_bar_height"
+        android:layout_height="wrap_content"
+        android:background="#F6F6F6"
         android:fitsSystemWindows="true"
+        android:padding="16dp"
         android:theme="@style/Theme.MyApplication.AppBarOverlay">
 
-        <com.google.android.material.appbar.CollapsingToolbarLayout
-            android:id="@+id/toolbar_layout"
+
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#F6F6F6"
             android:fitsSystemWindows="true"
-            android:padding="16dp"
-            app:contentScrim="?attr/colorPrimary"
+            app:layout_collapseMode="parallax"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
-
 
             <TextView
                 android:id="@+id/playListsInfoFragment_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="start|top"
                 android:text="@string/playlist_name_example"
                 android:textColor="?attr/colorOnSecondary"
-                android:textSize="24sp" />
+                android:textSize="24sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/playListsInfoFragment_description"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start|bottom"
+                android:layout_marginTop="16dp"
                 android:text="@string/playlist_description_example"
                 android:textColor="?attr/colorOnSecondary"
-                android:textSize="15sp" />
+                android:textSize="15sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/playListsInfoFragment_title" />
 
-        </com.google.android.material.appbar.CollapsingToolbarLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
     </com.google.android.material.appbar.AppBarLayout>
 
     <include layout="@layout/content_scrolling" />

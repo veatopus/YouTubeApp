@@ -2,6 +2,7 @@ package kg.geektech.ruslan.youtubeapp.ui.playlists
 
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -12,7 +13,8 @@ import kg.geektech.ruslan.youtubeapp.R
 import kg.geektech.ruslan.youtubeapp.core.BaseAdapter
 import kg.geektech.ruslan.youtubeapp.core.BaseAdapter.IBaseAdapterCallBack
 import kg.geektech.ruslan.youtubeapp.core.loadImage
-import kg.geektech.ruslan.youtubeapp.models.playlists.PlaylistItem
+import kg.geektech.ruslan.youtubeapp.data.models.playlists.PlaylistItem
+import kg.geektech.ruslan.youtubeapp.data.network.Status
 import kg.geektech.ruslan.youtubeapp.ui.playlist_info.PlaylistInfoFragment
 import kotlinx.android.synthetic.main.item_playlist.view.*
 import kotlinx.android.synthetic.main.playlists_fragment.*
@@ -38,8 +40,18 @@ class PlaylistsFragment : Fragment(), IBaseAdapterCallBack<PlaylistItem>,
         setUpRecycler()
         viewModel.fetchPlaylists()
             .observe(requireActivity(), Observer {
-                adapter.data = it?.items!!
-                adapter.notifyDataSetChanged()
+                when(it.status){
+                    Status.SUCCESS ->{
+                        adapter.data = it?.data?.items!!
+                        adapter.notifyDataSetChanged()
+                    }
+                    Status.ERROR -> {
+                        Log.e("getPlayListError", "setUpRecycler: ${it.message}")
+                    }
+                    else -> {
+                        Log.d("getPlayListError", "${it.status} ${it.message}")
+                    }
+                }
             })
     }
 

@@ -1,4 +1,4 @@
-package kg.geektech.ruslan.youtubeapp.models.playlists
+package kg.geektech.ruslan.youtubeapp.data.models.playlists
 
 data class Playlists(
     var kind: String? = null,

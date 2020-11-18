@@ -1,4 +1,4 @@
-package kg.geektech.ruslan.youtubeapp.network
+package kg.geektech.ruslan.youtubeapp.data.network
 
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor

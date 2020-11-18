@@ -1,6 +1,6 @@
-package kg.geektech.ruslan.youtubeapp.models.playlist
+package kg.geektech.ruslan.youtubeapp.data.models.playlist
 
-import kg.geektech.ruslan.youtubeapp.models.playlists.Thumbnails
+import kg.geektech.ruslan.youtubeapp.data.models.playlists.Thumbnails
 
 data class Playlist(
     var items: MutableList<Item>
