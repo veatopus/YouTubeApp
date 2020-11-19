@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import kg.geektech.ruslan.youtubeapp.R
 import kg.geektech.ruslan.youtubeapp.core.BaseAdapter
@@ -34,14 +35,16 @@ class PlaylistInfoFragment : Fragment(),
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         mViewModel = ViewModelProvider(this).get(PlaylistInfoViewModel::class.java)
+        (requireActivity() as AppCompatActivity).setSupportActionBar(toolbar)
         setUpData()
         setUpRecycler()
     }
 
     private fun setUpData() {
         playListId = arguments?.getString(KEY_PLAYLIST_ID)
-        playListsInfoFragment_title.text = arguments?.getString(KEY_PLAYLIST_TITLE)
-        playListsInfoFragment_description.text = arguments?.getString(KEY_PLAYLIST_DESCRIPTION)
+        toolbar_layout.title = arguments?.getString(KEY_PLAYLIST_TITLE)
+        toolbar_layout.title =
+            (toolbar_layout.title as String?)?.plus(("\n\n${arguments?.getString(KEY_PLAYLIST_DESCRIPTION)}"))
     }
 
     private fun setUpRecycler() {
@@ -51,8 +54,9 @@ class PlaylistInfoFragment : Fragment(),
             mViewModel.fetchPlaylistById(it).observe(requireActivity(), Observer {
                 when(it.status){
                     Status.SUCCESS ->{
-                        adapter.data = it?.data?.items!!
+                        for (i in 1..8) adapter.data.addAll( it?.data?.items!!)
                         adapter.notifyDataSetChanged()
+                        image_view.loadImage(it.data?.items?.get(0)?.snippet?.thumbnails?.medium?.url.toString())
                     }
                     Status.ERROR -> {
                         Log.e("getPlayListError", "setUpRecycler: ${it.message}")

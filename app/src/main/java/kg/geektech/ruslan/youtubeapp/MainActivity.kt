@@ -18,10 +18,10 @@ class MainActivity : AppCompatActivity() {
 
         navController.navigate(R.id.playListsFragment)
 
-        navController.addOnDestinationChangedListener { controller, destination, arguments ->
+        /*navController.addOnDestinationChangedListener { controller, destination, arguments ->
             if (destination.id == R.id.playListsFragment)
                 supportActionBar?.hide()
             else supportActionBar?.show()
-        }
+        }*/
     }
 }
