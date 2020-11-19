@@ -1,10 +1,15 @@
 package kg.geektech.ruslan.youtubeapp
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.liveData
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
-
+import kotlinx.coroutines.Dispatchers
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 class MainActivity : AppCompatActivity() {
 
@@ -23,5 +28,22 @@ class MainActivity : AppCompatActivity() {
                 supportActionBar?.hide()
             else supportActionBar?.show()
         }*/
+        getUrlFromDownload("url").observe(this, Observer {
+            Log.e("tegCorutinesUrl", "onCreate: $it")
+        })
+    }
+
+    private fun getUrlFromDownload(url: String) = liveData(Dispatchers.IO) {
+        emit(download(url))
+    }
+
+    private suspend fun download(url: String): String {
+        return suspendCoroutine {
+            Thread{
+                val result = "https://$url"
+                Thread.sleep(1000)
+                it.resume(result)
+            }
+        }
     }
 }

@@ -12,7 +12,7 @@ class YoutubeRepository {
 
     private var api = RetrofitClient().instanceRetrofit()
 
-    fun fetchPlaylistsFromNetwork() = liveData(Dispatchers.IO) {
+    fun fetchPlaylistsFromNetwork(pageToken: String?) = liveData(Dispatchers.IO) {
         emit(Resource.loading(data = null))
         try {
             emit(
@@ -20,6 +20,7 @@ class YoutubeRepository {
                     data = api.fetchPlaylists(
                         part = part,
                         key = key,
+                        pageToken = pageToken,
                         channelId = channel
                     )
                 )
@@ -29,13 +30,14 @@ class YoutubeRepository {
         }
     }
 
-    fun fetchPlaylistByIdFromNetwork(id: String) = liveData(Dispatchers.IO) {
+    fun fetchPlaylistByIdFromNetwork(id: String, pageToken: String?) = liveData(Dispatchers.IO) {
         emit(Resource.loading(data = null))
         try {
             emit(
                 Resource.success(
                     data = api.fetchPlaylistById(
                         part = part,
+                        pageToken = pageToken,
                         key = key,
                         playlistId = id
                     )

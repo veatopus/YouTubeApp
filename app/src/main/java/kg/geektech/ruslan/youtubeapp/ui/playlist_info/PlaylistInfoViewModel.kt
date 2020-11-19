@@ -1,15 +1,40 @@
 package kg.geektech.ruslan.youtubeapp.ui.playlist_info
 
-import androidx.lifecycle.LiveData
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import kg.geektech.ruslan.youtubeapp.data.models.playlist.Playlist
-import kg.geektech.ruslan.youtubeapp.data.network.Resource
+import kg.geektech.ruslan.youtubeapp.data.network.Status
 import kg.geektech.ruslan.youtubeapp.repository.YoutubeRepository
 
 class PlaylistInfoViewModel : ViewModel() {
+    var playListItems = MutableLiveData<MutableList<Playlist>>(mutableListOf())
+    private var id: String? = null
 
-    fun fetchPlaylistById(id: String): LiveData<Resource<Playlist>> {
-        return YoutubeRepository().fetchPlaylistByIdFromNetwork(id)
+    fun fetchPlaylistById(id: String, pageId: String?) {
+        this.id = id
+        YoutubeRepository().fetchPlaylistByIdFromNetwork(id, pageId).observeForever { resource ->
+            val newData = playListItems.value
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    resource.data?.let {
+                        newData?.add(it)
+                    }
+                    if (resource.data?.nextPageToken != null) fetchPlaylistById(id, resource.data.nextPageToken)
+                    Log.d("getPlayListSuccess", "fetchPlaylistById: $newData")
+                }
+
+                Status.ERROR -> Log.e(
+                    "getPlayListError",
+                    "setUpRecycler: ${resource.message}"
+                )
+
+                Status.LOADING -> Log.d(
+                    "getPlayListLoading",
+                    "setUpRecycler: ${resource.message}"
+                )
+            }
+            playListItems.value = newData
+        }
     }
 }

@@ -21,7 +21,7 @@ import kotlinx.android.synthetic.main.playlists_fragment.*
 class PlaylistsFragment : Fragment(),
     BaseAdapter.IBaseAdapterClickListener {
 
-    private lateinit var viewModel: PlaylistsViewModel
+    private lateinit var mViewModel: PlaylistsViewModel
 
     private val adapter =
         BaseAdapter(R.layout.item_playlist, mutableListOf(), this::onBind)
@@ -35,23 +35,17 @@ class PlaylistsFragment : Fragment(),
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(PlaylistsViewModel::class.java)
+        mViewModel = ViewModelProvider(this).get(PlaylistsViewModel::class.java)
         setUpRecycler()
-        viewModel.fetchPlaylists()
-            .observe(requireActivity(), Observer {
-                when(it.status){
-                    Status.SUCCESS ->{
-                        adapter.data = it?.data?.items!!
-                        adapter.notifyDataSetChanged()
-                    }
-                    Status.ERROR -> {
-                        Log.e("getPlayListError", "setUpRecycler: ${it.message}")
-                    }
-                    else -> {
-                        Log.d("getPlayListError", "${it.status} ${it.message}")
-                    }
-                }
-            })
+        setUpObs()
+    }
+
+    private fun setUpObs() {
+        mViewModel.fetchPlaylists(null)
+        mViewModel.mutableLiveDataListPlaylistItem.observe(requireActivity(), Observer {
+            adapter.data = it
+            adapter.notifyDataSetChanged()
+        })
     }
 
     private fun setUpRecycler() {

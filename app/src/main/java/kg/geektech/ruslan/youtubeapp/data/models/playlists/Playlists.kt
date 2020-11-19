@@ -3,6 +3,7 @@ package kg.geektech.ruslan.youtubeapp.data.models.playlists
 data class Playlists(
     var kind: String? = null,
     var etag: String? = null,
+    var nextPageToken: String,
     var items: MutableList<PlaylistItem>? = null
 )
 
