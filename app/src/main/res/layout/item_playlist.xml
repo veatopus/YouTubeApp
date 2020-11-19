@@ -21,7 +21,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
-            android:src="@mipmap/ic_launcher" />
+            android:src="@mipmap/you_tube_ic_launcher" />
 
         <TextView
             android:id="@+id/item_playlist_text_view_hint"
