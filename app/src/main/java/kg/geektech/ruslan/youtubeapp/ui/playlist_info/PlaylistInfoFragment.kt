@@ -10,18 +10,16 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import kg.geektech.ruslan.youtubeapp.R
 import kg.geektech.ruslan.youtubeapp.core.BaseAdapter
-import kg.geektech.ruslan.youtubeapp.core.gone
 import kg.geektech.ruslan.youtubeapp.core.loadImage
-import kg.geektech.ruslan.youtubeapp.data.models.playlist.Item
+import kg.geektech.ruslan.youtubeapp.ui.playlist_info.adapter.ListInfoAdapter
 import kotlinx.android.synthetic.main.content_scrolling.*
-import kotlinx.android.synthetic.main.item_playlist.view.*
 import kotlinx.android.synthetic.main.playlist_info_fragment.*
 
 class PlaylistInfoFragment : Fragment(),
     BaseAdapter.IBaseAdapterClickListener {
     private lateinit var mViewModel: PlaylistInfoViewModel
     private var playListId: String? = null
-    private val adapter = BaseAdapter(R.layout.item_playlist, mutableListOf(), this::onBind)
+    private val adapter = ListInfoAdapter()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -64,13 +62,6 @@ class PlaylistInfoFragment : Fragment(),
         adapter.listener = this
         playListsInfoFragment_recyclerview.adapter = adapter
         playListId?.let { mViewModel.fetchPlaylistById(it, null) }
-    }
-
-    private fun onBind(view: View, model: Item) {
-        view.item_playlist_text_view_hint.gone()
-        view.item_playlist_text_view_title_playList.text = model.snippet.title
-        view.item_playlist_text_view_amount_video.text = model.snippet.description
-        model.snippet.thumbnails.medium?.url?.let { view.item_playlist_image_playlist.loadImage(it) }
     }
 
     override fun onClick(pos: Int) {

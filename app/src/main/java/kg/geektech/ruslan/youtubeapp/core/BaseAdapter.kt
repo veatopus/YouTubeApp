@@ -5,10 +5,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 
-class BaseAdapter<T>(
+abstract class BaseAdapter<T>(
     private val holderLayoutId: Int,
-    var data: MutableList<T>,
-    private var onBind: (v: View,T) -> Unit
+    var data: MutableList<T>
 ) :
     RecyclerView.Adapter<BaseAdapter<T>.BaseViewHolder>() {
 
@@ -28,6 +27,8 @@ class BaseAdapter<T>(
         holder.onBind(data[position])
     }
 
+    abstract fun onBind(view: View, model: T)
+
     inner class BaseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         fun onBind(model: T) {
@@ -38,6 +39,7 @@ class BaseAdapter<T>(
             }
         }
     }
+
     interface IBaseAdapterClickListener {
         fun onClick(pos: Int)
     }
