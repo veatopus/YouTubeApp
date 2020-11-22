@@ -1,22 +1,19 @@
 package kg.geektech.ruslan.youtubeapp.ui.playlists
 
 import android.util.Log
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import kg.geektech.ruslan.youtubeapp.data.models.playlists.PlaylistItem
-import kg.geektech.ruslan.youtubeapp.data.models.playlists.Playlists
-import kg.geektech.ruslan.youtubeapp.data.network.Resource
 import kg.geektech.ruslan.youtubeapp.data.network.Status
 import kg.geektech.ruslan.youtubeapp.repository.YoutubeRepository
 
-class PlaylistsViewModel : ViewModel() {
+class PlaylistsViewModel(private var repository: YoutubeRepository) : ViewModel() {
     val mutableLiveDataListPlaylistItem =
         MutableLiveData<MutableList<PlaylistItem>>(mutableListOf())
 
     fun fetchPlaylists(pageToken: String?) {
         val newData = mutableLiveDataListPlaylistItem.value
-        YoutubeRepository().fetchPlaylistsFromNetwork(pageToken).observeForever { result ->
+        repository.fetchPlaylists(pageToken).observeForever { result ->
             when (result.status) {
                 Status.SUCCESS -> {
                     result.data?.items?.let { newData?.addAll(it) }

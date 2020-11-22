@@ -1,6 +1,5 @@
 package kg.geektech.ruslan.youtubeapp.ui.playlist_info
 
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -14,10 +13,12 @@ import kg.geektech.ruslan.youtubeapp.core.loadImage
 import kg.geektech.ruslan.youtubeapp.ui.playlist_info.adapter.ListInfoAdapter
 import kotlinx.android.synthetic.main.content_scrolling.*
 import kotlinx.android.synthetic.main.playlist_info_fragment.*
+import org.koin.android.ext.android.inject
 
 class PlaylistInfoFragment : Fragment(),
     BaseAdapter.IBaseAdapterClickListener {
-    private lateinit var mViewModel: PlaylistInfoViewModel
+
+    private val mViewModel by inject<PlaylistInfoViewModel>()
     private var playListId: String? = null
     private val adapter = ListInfoAdapter()
 
@@ -30,7 +31,6 @@ class PlaylistInfoFragment : Fragment(),
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        mViewModel = ViewModelProvider(this).get(PlaylistInfoViewModel::class.java)
         (requireActivity() as AppCompatActivity).setSupportActionBar(toolbar)
         setUpObserve()
         setUpData()
@@ -40,9 +40,9 @@ class PlaylistInfoFragment : Fragment(),
     private fun setUpObserve() {
         mViewModel.playListItems.observe(requireActivity(), Observer { dataList ->
             if (dataList.size > 0)
-                dataList[0].items[0].snippet.thumbnails.medium?.url?.let { image_view.loadImage(it) }
+                dataList[0].detailsItems[0].detailsSnippet.thumbnails.medium?.url?.let { if (image_view != null) image_view.loadImage(it) }
             adapter.data = mutableListOf()
-            for (i in dataList) adapter.data.addAll(i.items)
+            for (i in dataList) adapter.data.addAll(i.detailsItems)
             adapter.notifyDataSetChanged()
         })
     }
@@ -65,7 +65,7 @@ class PlaylistInfoFragment : Fragment(),
     }
 
     override fun onClick(pos: Int) {
-
+        TODO("ADD ITEM IFO")
     }
 
     companion object {

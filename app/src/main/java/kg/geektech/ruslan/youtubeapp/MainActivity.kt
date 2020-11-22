@@ -23,27 +23,12 @@ class MainActivity : AppCompatActivity() {
 
         navController.navigate(R.id.playListsFragment)
 
+        //отслеживание отображаемых фрагментов, вдруг пригодиться
         /*navController.addOnDestinationChangedListener { controller, destination, arguments ->
             if (destination.id == R.id.playListsFragment)
                 supportActionBar?.hide()
             else supportActionBar?.show()
         }*/
-        getUrlFromDownload("url").observe(this, Observer {
-            Log.e("tegCorutinesUrl", "onCreate: $it")
-        })
     }
 
-    private fun getUrlFromDownload(url: String) = liveData(Dispatchers.IO) {
-        emit(download(url))
-    }
-
-    private suspend fun download(url: String): String {
-        return suspendCoroutine {
-            Thread{
-                val result = "https://$url"
-                Thread.sleep(1000)
-                it.resume(result)
-            }
-        }
-    }
 }

@@ -1,28 +1,33 @@
 package kg.geektech.ruslan.youtubeapp.data.models.playlists
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import androidx.room.TypeConverters
+import kg.geektech.ruslan.youtubeapp.data.local.converters.ContentDetailsConverter
+import kg.geektech.ruslan.youtubeapp.data.local.converters.PlaylistItemsConverter
+import kg.geektech.ruslan.youtubeapp.data.local.converters.SnippetConverter
+
+@Entity
 data class Playlists(
-    var kind: String? = null,
-    var etag: String? = null,
+    @PrimaryKey(autoGenerate = true)
+    var id: Int?,
     var nextPageToken: String,
+    @TypeConverters(PlaylistItemsConverter::class)
     var items: MutableList<PlaylistItem>? = null
 )
 
 data class PlaylistItem(
-    var kind: String? = null,
-    var etag: String? = null,
     var id: String? = null,
+    @TypeConverters(SnippetConverter::class)
     var snippet: Snippet? = null,
-    var contentDetails: ContentDetails? = null,
-    var item: MutableList<Item>
+    @TypeConverters(ContentDetailsConverter::class)
+    var contentDetails: ContentDetails? = null
 )
 
 data class Snippet(
-    var publishedAt: String? = null,
-    var channelId: String? = null,
     var title: String? = null,
     var description: String? = null,
-    var thumbnails: Thumbnails? = null,
-    var resourceIdId: ResourceId
+    var thumbnails: Thumbnails? = null
 )
 
 data class Thumbnails(
@@ -35,15 +40,4 @@ data class Medium(
 
 data class ContentDetails(
     var itemCount: String? = null
-)
-
-data class Item(
-    var kind: String?,
-    var etag: String?,
-    var id: String?,
-    var snippet: Snippet?
-)
-
-data class ResourceId(
-    var videoId: String?
 )

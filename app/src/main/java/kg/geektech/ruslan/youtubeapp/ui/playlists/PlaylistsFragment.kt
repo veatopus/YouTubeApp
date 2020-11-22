@@ -1,6 +1,5 @@
 package kg.geektech.ruslan.youtubeapp.ui.playlists
 
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -11,13 +10,14 @@ import androidx.navigation.fragment.findNavController
 import kg.geektech.ruslan.youtubeapp.R
 import kg.geektech.ruslan.youtubeapp.core.BaseAdapter
 import kg.geektech.ruslan.youtubeapp.ui.playlist_info.PlaylistInfoFragment
-import kg.geektech.ruslan.youtubeapp.ui.playlists.adaptet.ListAdapter
+import kg.geektech.ruslan.youtubeapp.ui.playlists.adapter.ListAdapter
 import kotlinx.android.synthetic.main.playlists_fragment.*
+import org.koin.android.ext.android.inject
 
 class PlaylistsFragment : Fragment(),
     BaseAdapter.IBaseAdapterClickListener {
 
-    private lateinit var mViewModel: PlaylistsViewModel
+    private val mViewModel by inject<PlaylistsViewModel>()
     private val adapter = ListAdapter()
 
     override fun onCreateView(
@@ -29,7 +29,6 @@ class PlaylistsFragment : Fragment(),
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        mViewModel = ViewModelProvider(this).get(PlaylistsViewModel::class.java)
         setUpRecycler()
         setUpObs()
     }

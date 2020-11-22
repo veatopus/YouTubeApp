@@ -1,4 +1,4 @@
-package kg.geektech.ruslan.youtubeapp.ui.playlists.adaptet
+package kg.geektech.ruslan.youtubeapp.ui.playlists.adapter
 
 import android.view.View
 import kg.geektech.ruslan.youtubeapp.R

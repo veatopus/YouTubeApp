@@ -1,48 +1,36 @@
 package kg.geektech.ruslan.youtubeapp.repository
 
 import androidx.lifecycle.liveData
+import kg.geektech.ruslan.youtubeapp.data.local.dao.PlayListDao
 import kg.geektech.ruslan.youtubeapp.data.network.Resource
-import kg.geektech.ruslan.youtubeapp.data.network.RetrofitClient
+import kg.geektech.ruslan.youtubeapp.data.network.YoutubeApi
 import kotlinx.coroutines.Dispatchers
 
-class YoutubeRepository {
-    private val channel = "UC2Ru64PHqW4FxoP0xhQRvJg"
-    private val key = "AIzaSyAx8p70xc-SuyvmfhLZbCCJNiqQOQG0nj0"
-    private val part = "snippet,contentDetails"
+const val channel = "UC2Ru64PHqW4FxoP0xhQRvJg"
+const val key = "AIzaSyAx8p70xc-SuyvmfhLZbCCJNiqQOQG0nj0"
+const val part = "snippet,contentDetails"
 
-    private var api = RetrofitClient().instanceRetrofit()
+class YoutubeRepository(private var api: YoutubeApi, private var dao: PlayListDao) {
 
-    fun fetchPlaylistsFromNetwork(pageToken: String?) = liveData(Dispatchers.IO) {
+    fun fetchPlaylists(pageToken: String?) = liveData(Dispatchers.IO) {
         emit(Resource.loading(data = null))
-        try {
-            emit(
-                Resource.success(
-                    data = api.fetchPlaylists(
-                        part = part,
-                        key = key,
-                        pageToken = pageToken,
-                        channelId = channel
-                    )
-                )
-            )
-        } catch (e: Exception) {
-            emit(Resource.error(data = null, message = e.message ?: "Error"))
+        if (dao.getAll()?.isNotEmpty()!!)
+            emit(Resource.success(dao.getAll()!![0]))
+        else {
+            try {
+                val data = api.fetchPlaylists(part, pageToken, key, channel)
+                dao.insert(data)
+                emit(Resource.success(data))
+            } catch (e: Exception) {
+                emit(Resource.error(data = null, message = e.message ?: "Error"))
+            }
         }
     }
 
     fun fetchPlaylistByIdFromNetwork(id: String, pageToken: String?) = liveData(Dispatchers.IO) {
         emit(Resource.loading(data = null))
         try {
-            emit(
-                Resource.success(
-                    data = api.fetchPlaylistById(
-                        part = part,
-                        pageToken = pageToken,
-                        key = key,
-                        playlistId = id
-                    )
-                )
-            )
+            emit(Resource.success(data = api.fetchPlaylistById(part, pageToken, id, key)))
         } catch (e: Exception) {
             emit(Resource.error(data = null, message = e.message ?: "Error"))
         }
