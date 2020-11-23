@@ -1,11 +1,13 @@
 package kg.geektech.ruslan.youtubeapp
 
 import android.app.Application
-import kg.geektech.ruslan.youtubeapp.di.mainModule
-import kg.geektech.ruslan.youtubeapp.di.viewModelModule
+import kg.geektech.ruslan.youtubeapp.data.local.client.DatabaseClient
+import kg.geektech.ruslan.youtubeapp.di.*
+import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
+import org.koin.dsl.koinApplication
 
 class App : Application(){
 
@@ -16,7 +18,9 @@ class App : Application(){
             androidLogger()
             androidContext(this@App)
 
-            modules(listOf(mainModule, viewModelModule))
+            modules(listOf(viewModelModule, databaseModule, networkModule, repositoryModule))
         }
+
+
     }
 }

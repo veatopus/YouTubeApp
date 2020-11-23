@@ -13,7 +13,7 @@ class PlaylistInfoViewModel(var repository: YoutubeRepository) : ViewModel() {
 
     fun fetchPlaylistById(id: String, pageId: String?) {
         this.id = id
-        repository.fetchPlaylistByIdFromNetwork(id, pageId).observeForever { resource ->
+        repository.fetchDetailsPlaylistByIdFromNetwork(id, pageId).observeForever { resource ->
             val newData = playListItems.value
             when (resource.status) {
                 Status.SUCCESS -> {

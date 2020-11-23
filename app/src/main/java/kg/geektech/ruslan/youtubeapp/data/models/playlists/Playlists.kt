@@ -11,16 +11,14 @@ import kg.geektech.ruslan.youtubeapp.data.local.converters.SnippetConverter
 data class Playlists(
     @PrimaryKey(autoGenerate = true)
     var id: Int?,
-    var nextPageToken: String,
+    var nextPageToken: String = "",
     @TypeConverters(PlaylistItemsConverter::class)
     var items: MutableList<PlaylistItem>? = null
 )
 
 data class PlaylistItem(
     var id: String? = null,
-    @TypeConverters(SnippetConverter::class)
     var snippet: Snippet? = null,
-    @TypeConverters(ContentDetailsConverter::class)
     var contentDetails: ContentDetails? = null
 )
 
