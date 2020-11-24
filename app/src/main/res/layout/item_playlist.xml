@@ -20,8 +20,7 @@
             android:id="@+id/item_playlist_image_playlist"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scaleType="centerCrop"
-            android:src="@mipmap/you_tube_ic_launcher" />
+            android:scaleType="centerCrop" />
 
         <TextView
             android:id="@+id/item_playlist_text_view_hint"
@@ -31,7 +30,6 @@
             android:background="#CC000000"
             android:gravity="end|center"
             android:paddingEnd="24dp"
-            android:text="@string/playlist_hint_hint"
             android:textColor="@android:color/white"
             tools:ignore="RtlSymmetry" />
 
@@ -45,7 +43,6 @@
         android:fontFamily="@font/abril_fatface"
         android:maxEms="10"
         android:maxLines="2"
-        android:text="@string/playlist_name_example"
         android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@id/item_playlist_text_view_amount_video"
@@ -57,7 +54,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:text="@string/amount_video_example"
         android:maxEms="13"
         android:maxLines="1"
         android:textSize="12sp"

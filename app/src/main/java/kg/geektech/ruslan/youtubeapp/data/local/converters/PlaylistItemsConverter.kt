@@ -6,15 +6,19 @@ import com.google.gson.reflect.TypeToken
 import kg.geektech.ruslan.youtubeapp.data.models.playlists.PlaylistItem
 import java.lang.reflect.Type
 
-class PlaylistItemsConverter {
-    companion object{
-        private val gson = Gson()
-        private val type: Type = object : TypeToken<MutableList<PlaylistItem>>() {}.type
+object PlaylistItemsConverter {
 
-        @TypeConverter
-        fun daysOfWeekToString(playlistItems: MutableList<PlaylistItem>?): String? = gson.toJson(playlistItems, type)
+    private val gson = Gson()
+    private val type: Type = object : TypeToken<MutableList<PlaylistItem>>() {}.type
 
-        @TypeConverter
-        fun stringToDaysOfWeek(playlistItems: String?): MutableList<PlaylistItem>? = gson.fromJson(playlistItems, type)
-    }
+    @TypeConverter
+    @JvmStatic
+    fun daysOfWeekToString(playlistItems: MutableList<PlaylistItem>?): String? =
+        gson.toJson(playlistItems, type)
+
+    @TypeConverter
+    @JvmStatic
+    fun stringToDaysOfWeek(playlistItems: String?): MutableList<PlaylistItem>? =
+        gson.fromJson(playlistItems, type)
+
 }

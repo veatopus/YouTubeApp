@@ -40,9 +40,9 @@ class PlaylistInfoFragment : Fragment(),
     private fun setUpObserve() {
         mViewModel.playListItems.observe(requireActivity(), Observer { dataList ->
             if (dataList.size > 0)
-                dataList[0].detailsItems[0].detailsSnippet.thumbnails.medium?.url?.let { if (image_view != null) image_view.loadImage(it) }
+                dataList[0].items[0].snippet.thumbnails.medium?.url?.let { if (image_view != null) image_view.loadImage(it) }
             adapter.data = mutableListOf()
-            for (i in dataList) adapter.data.addAll(i.detailsItems)
+            dataList.forEach { adapter.data.addAll(it.items) }
             adapter.notifyDataSetChanged()
         })
     }

@@ -1,6 +1,6 @@
 package kg.geektech.ruslan.youtubeapp.data.network
 
-import kg.geektech.ruslan.youtubeapp.data.models.playlist.DetailsPlaylist
+import kg.geektech.ruslan.youtubeapp.data.models.detailPlaylist.DetailsPlaylist
 import kg.geektech.ruslan.youtubeapp.data.models.playlists.Playlists
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -15,7 +15,7 @@ interface YoutubeApi {
     ): Playlists
 
     @GET("youtube/v3/playlistItems")
-    suspend fun fetchPlaylistById(
+    suspend fun fetchDetailPlaylistById(
         @Query("part") part: String,
         @Query("pageToken") pageToken: String?,
         @Query("playlistId") playlistId: String,

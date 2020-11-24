@@ -15,17 +15,19 @@ class PlaylistsViewModel(private var repository: YoutubeRepository) : ViewModel(
         val newData = mutableLiveDataListPlaylistItem.value
         repository.fetchPlaylists(pageToken).observeForever { result ->
             when (result.status) {
-                Status.SUCCESS -> result.data?.forEach { playlist ->
-                    playlist.items?.let {
-                        mutableLiveDataListPlaylistItem.value?.addAll(
-                            it
-                        )
+                Status.SUCCESS -> {
+                    for (i in result.data!!){
+                        i.items?.let {
+                            newData?.addAll(
+                                it
+                            )
+                        }
                     }
                 }
                 Status.ERROR -> Log.e("ololo", "fetchPlaylists: ${result.message}")
                 Status.LOADING -> Log.d("ololo", "fetchPlaylists: ")
             }
-            mutableLiveDataListPlaylistItem.value = newData
+            mutableLiveDataListPlaylistItem.value = newData!!
         }
     }
 

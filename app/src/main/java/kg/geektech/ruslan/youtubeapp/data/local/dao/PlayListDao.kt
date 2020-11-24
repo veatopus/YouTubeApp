@@ -8,9 +8,9 @@ import kg.geektech.ruslan.youtubeapp.data.models.playlists.Playlists
 @Dao
 interface PlayListDao {
 
-    @Query("SELECT * FROM playlists WHERE nextPageToken = :pageToken")
-    suspend fun getPlaylistByNextPageToken(pageToken: String): Playlists?
+    @Query("SELECT * FROM playlists")
+    suspend fun getAll(): List<Playlists>?
 
     @Insert
-    fun insert(playlists: Playlists)
+    suspend fun insert(playlists: Playlists)
 }

@@ -1,14 +1,14 @@
-package kg.geektech.ruslan.youtubeapp.data.models.playlist
+package kg.geektech.ruslan.youtubeapp.data.models.detailPlaylist
 
 import kg.geektech.ruslan.youtubeapp.data.models.playlists.Thumbnails
 
 data class DetailsPlaylist(
-    var detailsItems: MutableList<DetailsItem>,
-    var nextPageToken: String
+    var items: MutableList<DetailsItem>,
+    var nextPageToken: String?
 )
 
 data class DetailsItem(
-    var detailsSnippet: DetailsSnippet
+    var snippet: DetailsSnippet
 )
 
 data class DetailsSnippet(
