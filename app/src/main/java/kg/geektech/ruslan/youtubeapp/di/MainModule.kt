@@ -17,6 +17,8 @@ var viewModelModule = module {
 var databaseModule = module {
     factory { DatabaseClient().provideDatabase(androidContext()) }
     factory { DatabaseClient().providePlaylistDao(get()) }
+    factory { DatabaseClient().provideDetailPlaylistDao(get()) }
+
 }
 
 var networkModule = module {
@@ -25,5 +27,5 @@ var networkModule = module {
 }
 
 var repositoryModule = module {
-    factory { YoutubeRepository(get(), get()) }
+    factory { YoutubeRepository(get(), get(), get()) }
 }

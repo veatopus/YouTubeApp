@@ -2,10 +2,6 @@ package kg.geektech.ruslan.youtubeapp.data.models.playlists
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import androidx.room.TypeConverters
-import kg.geektech.ruslan.youtubeapp.data.local.converters.ContentDetailsConverter
-import kg.geektech.ruslan.youtubeapp.data.local.converters.PlaylistItemsConverter
-import kg.geektech.ruslan.youtubeapp.data.local.converters.SnippetConverter
 
 @Entity
 data class Playlists(

@@ -9,7 +9,7 @@ import kg.geektech.ruslan.youtubeapp.data.models.playlists.Playlists
 interface PlayListDao {
 
     @Query("SELECT * FROM playlists")
-    suspend fun getAll(): List<Playlists>?
+    suspend fun getAll(): MutableList<Playlists>?
 
     @Insert
     suspend fun insert(playlists: Playlists)

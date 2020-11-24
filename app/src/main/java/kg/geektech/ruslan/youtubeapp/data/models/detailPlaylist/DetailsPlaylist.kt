@@ -1,8 +1,13 @@
 package kg.geektech.ruslan.youtubeapp.data.models.detailPlaylist
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import kg.geektech.ruslan.youtubeapp.data.models.playlists.Thumbnails
 
+@Entity
 data class DetailsPlaylist(
+    @PrimaryKey(autoGenerate = true)
+    val id: Int? = null,
     var items: MutableList<DetailsItem>,
     var nextPageToken: String?
 )

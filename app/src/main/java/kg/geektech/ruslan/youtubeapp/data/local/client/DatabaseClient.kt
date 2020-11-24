@@ -2,6 +2,7 @@ package kg.geektech.ruslan.youtubeapp.data.local.client
 
 import android.content.Context
 import androidx.room.Room
+import kg.geektech.ruslan.youtubeapp.data.local.dao.DetailPlayListDao
 import kg.geektech.ruslan.youtubeapp.data.local.dao.PlayListDao
 import kg.geektech.ruslan.youtubeapp.data.local.database.PlaylistDatabase
 
@@ -17,4 +18,7 @@ class DatabaseClient {
     }
 
     fun providePlaylistDao(database: PlaylistDatabase): PlayListDao? = database.playlistDao()
+
+    fun provideDetailPlaylistDao(database: PlaylistDatabase): DetailPlayListDao? = database.detailPlaylistDao()
+
 }
