@@ -1,6 +1,5 @@
 package kg.geektech.ruslan.youtubeapp.repository
 
-import android.util.Log
 import androidx.lifecycle.liveData
 import kg.geektech.ruslan.youtubeapp.data.local.dao.DetailPlayListDao
 import kg.geektech.ruslan.youtubeapp.data.local.dao.PlayListDao
@@ -23,12 +22,8 @@ class YoutubeRepository(
     fun fetchPlaylists(pageToken: String?) = liveData(Dispatchers.IO) {
         emit(Resource.loading(null))
         try {
-            var playlists: List<Playlists>? = playListDao.getAll()
-            if (playlists.isNullOrEmpty()) {
-                playlists = fetchPlaylistsByNetwork(pageToken, mutableListOf())
-                playlists.forEach { playListDao.insert(it) }
-            }
-            emit(Resource.success(playlists))
+            updateDataPlaylistDao(pageToken)
+            emit(Resource.success(playListDao.getAllPlaylists()))
         } catch (e: Exception) {
             emit(Resource.error(data = null, message = e.message ?: "Error"))
         }
@@ -37,11 +32,19 @@ class YoutubeRepository(
     private suspend fun fetchPlaylistsByNetwork(
         pageToken: String?,
         data: MutableList<Playlists>
-    ): MutableList<Playlists> {
+    ): MutableList<Playlists>? {
         api.fetchPlaylists(part, pageToken, key, channelId).also {
-            data.add(it)
-            return if (it.nextPageToken != null) fetchPlaylistsByNetwork(it.nextPageToken, data)
+            if (it != null) data.add(it)
+            return if (it?.nextPageToken != null) fetchPlaylistsByNetwork(it.nextPageToken, data)
             else data
+        }
+    }
+
+    private suspend fun updateDataPlaylistDao(pageToken: String?) {
+        val playlists = fetchPlaylistsByNetwork(pageToken, mutableListOf())
+        if (playlists != null) {
+            playListDao.deleteAllPlaylists()
+            playlists.forEach { playListDao.insertPlaylists(it) }
         }
     }
 
@@ -49,28 +52,33 @@ class YoutubeRepository(
         liveData(Dispatchers.IO) {
             emit(Resource.loading(data = null))
             try {
-                var data = detailPlayListDao.getDetailsPlaylistById(playlistDaoId)
-                Log.d("ofdpojga", "fetchDetailsPlaylistById: $data")
-                if (data == null) {
-                    data = fetchDetailPlaylistsByNetwork(pageToken, playlistApiId, null)
-                    data.playlistApiId = data.items[0].snippet.playlistId
-                    detailPlayListDao.insert(data)
-                }
-                emit(Resource.success(data = data))
+                updateDAtaDetailPlaylist(pageToken, playlistApiId)
+                emit(Resource.success(data = detailPlayListDao.getDetailsPlaylistById(playlistDaoId)))
             } catch (e: Exception) {
                 e.printStackTrace()
                 emit(Resource.error(data = null, message = e.message ?: "Error"))
             }
         }
 
+    private suspend fun updateDAtaDetailPlaylist(
+        pageToken: String?,
+        playlistApiId: String
+    ) {
+        val data = fetchDetailPlaylistsByNetwork(pageToken, playlistApiId, null)
+        if (data != null) {
+            data.playlistApiId = data.items[0].snippet.playlistId
+            detailPlayListDao.insertDetailsPlaylist(data)
+        }
+    }
+
     private suspend fun fetchDetailPlaylistsByNetwork(
         pageToken: String?,
         playlistId: String,
         data: DetailsPlaylist?
-    ): DetailsPlaylist {
+    ): DetailsPlaylist? {
         val newData = api.fetchDetailPlaylistById(part, pageToken, playlistId, key)
-        data?.let { newData.items.addAll(it.items) }
-        return if (newData.nextPageToken != null) fetchDetailPlaylistsByNetwork(
+        data?.let { newData?.items?.addAll(it.items) }
+        return if (newData?.nextPageToken != null) fetchDetailPlaylistsByNetwork(
             newData.nextPageToken,
             playlistId,
             newData

@@ -1,6 +1,5 @@
 package kg.geektech.ruslan.youtubeapp.ui.playlist_info
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import kg.geektech.ruslan.youtubeapp.data.models.detailPlaylist.DetailsPlaylist
@@ -14,32 +13,11 @@ class PlaylistInfoViewModel(var repository: YoutubeRepository) : ViewModel() {
     fun fetchPlaylistById(playlistApi: String, pageToken: String?, playlistDao: String) {
         repository.fetchDetailsPlaylistById(playlistApi, pageToken, playlistDao)
             .observeForever { resource ->
-                when (resource.status) {
-                    Status.SUCCESS -> {
-                        playListItems.value = resource.data!!
-                        isLoading.value = false
-                        Log.d(
-                            "getPlayListSuccess",
-                            "fetchPlaylistById: ${resource.data}"
-                        )
-                    }
-
-                    Status.ERROR -> {
-                        isLoading.value = false
-                        Log.e(
-                            "getPlayListError",
-                            "fetchPlaylistById: ${resource.message}"
-                        )
-                    }
-
-                    Status.LOADING -> {
-                        isLoading.value = true
-                        Log.d(
-                            "getPlayListLoading",
-                            "fetchPlaylistById: ${resource.message}"
-                        )
-                    }
+                if (resource.status == Status.SUCCESS) {
+                    playListItems.value = resource.data!!
+                    isLoading.value = false
                 }
+                else if (resource.status == Status.LOADING) { isLoading.value = true }
             }
     }
 }

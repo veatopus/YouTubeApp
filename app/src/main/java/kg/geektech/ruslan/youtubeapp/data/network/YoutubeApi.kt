@@ -12,7 +12,7 @@ interface YoutubeApi {
         @Query("pageToken") pageToken: String?,
         @Query("key") key: String,
         @Query("channelId") channelId: String
-    ): Playlists
+    ): Playlists?
 
     @GET("youtube/v3/playlistItems")
     suspend fun fetchDetailPlaylistById(
@@ -20,5 +20,5 @@ interface YoutubeApi {
         @Query("pageToken") pageToken: String?,
         @Query("playlistId") playlistId: String,
         @Query("key") key: String
-    ): DetailsPlaylist
+    ): DetailsPlaylist?
 }

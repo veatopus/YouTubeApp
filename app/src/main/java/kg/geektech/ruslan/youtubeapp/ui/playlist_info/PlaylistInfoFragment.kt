@@ -12,6 +12,7 @@ import kg.geektech.ruslan.youtubeapp.core.BaseAdapter
 import kg.geektech.ruslan.youtubeapp.core.gone
 import kg.geektech.ruslan.youtubeapp.core.loadImage
 import kg.geektech.ruslan.youtubeapp.core.visible
+import kg.geektech.ruslan.youtubeapp.data.models.detailPlaylist.DetailsItem
 import kg.geektech.ruslan.youtubeapp.ui.playlist_info.adapter.ListInfoAdapter
 import kotlinx.android.synthetic.main.content_scrolling.*
 import kotlinx.android.synthetic.main.playlist_info_fragment.*
@@ -43,14 +44,18 @@ class PlaylistInfoFragment : Fragment(),
     private fun setUpObserve() {
         mViewModel.playListItems.observe(requireActivity(), Observer { detailsPlaylist ->
             detailsPlaylist.items[0].snippet.thumbnails.medium?.url?.let { image_view.loadImage(it) }
-            adapter.data = mutableListOf()
-            adapter.data = detailsPlaylist.items
-            adapter.notifyDataSetChanged()
+            updateItems(detailsPlaylist.items)
         })
         mViewModel.isLoading.observe(requireActivity(), Observer {
             if (it) progress_bar.visible()
             else progress_bar.gone()
         })
+    }
+
+    private fun updateItems(items: MutableList<DetailsItem>) {
+        adapter.data = mutableListOf()
+        adapter.data = items
+        adapter.notifyDataSetChanged()
     }
 
     private fun setUpData() {
