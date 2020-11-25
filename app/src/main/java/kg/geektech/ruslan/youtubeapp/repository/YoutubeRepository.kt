@@ -1,5 +1,6 @@
 package kg.geektech.ruslan.youtubeapp.repository
 
+import android.util.Log
 import androidx.lifecycle.liveData
 import kg.geektech.ruslan.youtubeapp.data.local.dao.DetailPlayListDao
 import kg.geektech.ruslan.youtubeapp.data.local.dao.PlayListDao
@@ -29,23 +30,35 @@ class YoutubeRepository(
         }
     }
 
-    private suspend fun fetchPlaylistsByNetwork(
-        pageToken: String?,
-        data: MutableList<Playlists>
-    ): MutableList<Playlists>? {
-        api.fetchPlaylists(part, pageToken, key, channelId).also {
-            if (it != null) data.add(it)
-            return if (it?.nextPageToken != null) fetchPlaylistsByNetwork(it.nextPageToken, data)
-            else data
-        }
-    }
-
     private suspend fun updateDataPlaylistDao(pageToken: String?) {
-        val playlists = fetchPlaylistsByNetwork(pageToken, mutableListOf())
+        var playlists: MutableList<Playlists>? = null
+        try {
+            playlists = fetchPlaylistsByNetwork(pageToken, mutableListOf())
+        } catch (ignore: Exception) {
+        }
+
         if (playlists != null) {
             playListDao.deleteAllPlaylists()
             playlists.forEach { playListDao.insertPlaylists(it) }
         }
+    }
+
+    private suspend fun fetchPlaylistsByNetwork(
+        pageToken: String?,
+        data: MutableList<Playlists>
+    ): MutableList<Playlists>? {
+        Log.d("dghf", "fetchPlaylistsByNetwork: ")
+        val newData = api.fetchPlaylists(part, pageToken, key, channelId)
+        if (newData != null) {
+            newData.also {
+                data.add(it)
+                return if (it.nextPageToken != null) fetchPlaylistsByNetwork(
+                    it.nextPageToken,
+                    data
+                )
+                else data
+            }
+        } else return null
     }
 
     fun fetchDetailsPlaylistById(playlistApiId: String, pageToken: String?, playlistDaoId: String) =
@@ -64,10 +77,16 @@ class YoutubeRepository(
         pageToken: String?,
         playlistApiId: String
     ) {
-        val data = fetchDetailPlaylistsByNetwork(pageToken, playlistApiId, null)
-        if (data != null) {
-            data.playlistApiId = data.items[0].snippet.playlistId
-            detailPlayListDao.insertDetailsPlaylist(data)
+        var data: DetailsPlaylist? = null
+        try {
+            data = fetchDetailPlaylistsByNetwork(pageToken, playlistApiId, null)
+        } catch (ignore: Exception) {
+
+        } finally {
+            if (data != null) {
+                data.playlistApiId = data.items[0].snippet.playlistId
+                detailPlayListDao.insertDetailsPlaylist(data)
+            }
         }
     }
 
