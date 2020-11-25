@@ -8,12 +8,12 @@ import kg.geektech.ruslan.youtubeapp.data.network.Status
 import kg.geektech.ruslan.youtubeapp.repository.YoutubeRepository
 
 class PlaylistInfoViewModel(var repository: YoutubeRepository) : ViewModel() {
-    var playListItems = MutableLiveData<MutableList<DetailsPlaylist>>(mutableListOf())
+    var playListItems = MutableLiveData<DetailsPlaylist>()
     private var id: String? = null
 
-    fun fetchPlaylistById(id: String, pageId: String?) {
-        this.id = id
-        repository.fetchDetailsPlaylistById(id, pageId).observeForever { resource ->
+    fun fetchPlaylistById(playlistApi: String, pageToken: String?, playlistDao: Int) {
+        this.id = playlistApi
+        repository.fetchDetailsPlaylistById(playlistApi, pageToken, playlistDao).observeForever { resource ->
             when (resource.status) {
                 Status.SUCCESS -> {
                     playListItems.value = resource.data!!

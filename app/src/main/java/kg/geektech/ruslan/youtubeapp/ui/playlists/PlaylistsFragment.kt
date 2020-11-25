@@ -64,6 +64,10 @@ class PlaylistsFragment : Fragment(),
                             PlaylistInfoFragment.KEY_PLAYLIST_DESCRIPTION,
                             adapter.data[pos].snippet?.description
                         )
+                        it.putInt(
+                            PlaylistInfoFragment.KEY_PLAYLIST_POSITION,
+                            pos
+                        )
                     }
             )
     }

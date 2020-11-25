@@ -19,7 +19,8 @@ class PlaylistInfoFragment : Fragment(),
     BaseAdapter.IBaseAdapterClickListener {
 
     private val mViewModel by inject<PlaylistInfoViewModel>()
-    private var playListId: String? = null
+    private var playlistId: String? = null
+    private var playlistPosition: Int? = null
     private val adapter = ListInfoAdapter()
 
     override fun onCreateView(
@@ -38,17 +39,17 @@ class PlaylistInfoFragment : Fragment(),
     }
 
     private fun setUpObserve() {
-        mViewModel.playListItems.observe(requireActivity(), Observer { dataList ->
-            if (dataList.size > 0)
-                dataList[0].items[0].snippet.thumbnails.medium?.url?.let { if (image_view != null) image_view.loadImage(it) }
+        mViewModel.playListItems.observe(requireActivity(), Observer { detailsPlaylist ->
+            detailsPlaylist.items[0].snippet.thumbnails.medium?.url?.let { image_view.loadImage(it) }
             adapter.data = mutableListOf()
-            dataList.forEach { adapter.data.addAll(it.items) }
+            adapter.data = detailsPlaylist.items
             adapter.notifyDataSetChanged()
         })
     }
 
     private fun setUpData() {
-        playListId = arguments?.getString(KEY_PLAYLIST_ID)
+        playlistId = arguments?.getString(KEY_PLAYLIST_ID)
+        playlistPosition = arguments?.getInt(KEY_PLAYLIST_POSITION)
         toolbar_layout.title = arguments?.getString(KEY_PLAYLIST_TITLE)
         toolbar_layout.title =
             (toolbar_layout.title as String?)?.plus(
@@ -61,7 +62,11 @@ class PlaylistInfoFragment : Fragment(),
     private fun setUpRecycler() {
         adapter.listener = this
         playListsInfoFragment_recyclerview.adapter = adapter
-        playListId?.let { mViewModel.fetchPlaylistById(it, null) }
+        playlistId?.let { playlistId ->
+            playlistPosition?.let {
+                mViewModel.fetchPlaylistById(playlistId, null, it)
+            }
+        }
     }
 
     override fun onClick(pos: Int) {
@@ -72,5 +77,6 @@ class PlaylistInfoFragment : Fragment(),
         const val KEY_PLAYLIST_ID = "CEY_PLAYLIST_ID"
         const val KEY_PLAYLIST_TITLE = "CEY_PLAYLIST_TITLE"
         const val KEY_PLAYLIST_DESCRIPTION = "CEY_PLAYLIST_DESCRIPTION"
+        const val KEY_PLAYLIST_POSITION = "CEY_PLAYLIST_POSITION"
     }
 }

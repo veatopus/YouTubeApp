@@ -33,19 +33,21 @@ class YoutubeRepository(
         }
     }
 
-    fun fetchDetailsPlaylistById(id: String, pageToken: String?) = liveData(Dispatchers.IO) {
-        emit(Resource.loading(data = null))
-        try {
-            var data = detailPlayListDao.getAll()
-            if (data.isNullOrEmpty()) {
-                data = fetchDetailPlaylistsByNetwork(pageToken, id, mutableListOf())
-                data.forEach { detailPlayListDao.insert(it) }
+    fun fetchDetailsPlaylistById(playlistApiId: String, pageToken: String?, playlistDaoId: Int) =
+        liveData(Dispatchers.IO) {
+            emit(Resource.loading(data = null))
+            try {
+                val dataFromDao = detailPlayListDao.getDetailsPlaylistById(playlistDaoId)
+                emit(
+                    Resource.success(
+                        data = if (dataFromDao == null) dataFromDao
+                        else fetchDetailPlaylistsByNetwork(pageToken, playlistApiId, null)
+                    )
+                )
+            } catch (e: Exception) {
+                emit(Resource.error(data = null, message = e.message ?: "Error"))
             }
-            emit(Resource.success(data = data))
-        } catch (e: Exception) {
-            emit(Resource.error(data = null, message = e.message ?: "Error"))
         }
-    }
 
     private suspend fun fetchPlaylistsByNetwork(
         pageToken: String?,
@@ -61,17 +63,17 @@ class YoutubeRepository(
     private suspend fun fetchDetailPlaylistsByNetwork(
         pageToken: String?,
         playlistId: String,
-        data: MutableList<DetailsPlaylist>
-    ): MutableList<DetailsPlaylist> {
-        api.fetchDetailPlaylistById(part, pageToken, playlistId, key).also {
-            data.add(it)
-            return if (it.nextPageToken != null) fetchDetailPlaylistsByNetwork(
-                it.nextPageToken,
-                playlistId,
-                data
-            )
-            else data
-        }
+        data: DetailsPlaylist?
+    ): DetailsPlaylist {
+        val newData = api.fetchDetailPlaylistById(part, pageToken, playlistId, key)
+        data?.let { newData.items.addAll(it.items) }
+        return if (newData.nextPageToken != null) fetchDetailPlaylistsByNetwork(
+            newData.nextPageToken,
+            playlistId,
+            newData
+        )
+        else newData
+
     }
 
 }

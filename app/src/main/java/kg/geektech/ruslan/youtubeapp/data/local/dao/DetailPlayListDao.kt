@@ -11,6 +11,9 @@ interface DetailPlayListDao{
     @Query("SELECT * FROM detailsplaylist")
     suspend fun getAll(): MutableList<DetailsPlaylist>?
 
+    @Query("SELECT * FROM detailsplaylist WHERE id = :id")
+    suspend fun getDetailsPlaylistById(id: Int): DetailsPlaylist?
+
     @Insert
     suspend fun insert(playlists: DetailsPlaylist)
 
