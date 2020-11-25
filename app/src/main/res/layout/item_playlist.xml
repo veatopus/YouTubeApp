@@ -29,6 +29,7 @@
             android:layout_gravity="bottom"
             android:background="#CC000000"
             android:gravity="end|center"
+            android:text="@string/playlist_hint_hint"
             android:paddingEnd="24dp"
             android:textColor="@android:color/white"
             tools:ignore="RtlSymmetry" />

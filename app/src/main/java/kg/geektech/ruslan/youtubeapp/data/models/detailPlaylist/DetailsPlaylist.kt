@@ -7,7 +7,8 @@ import kg.geektech.ruslan.youtubeapp.data.models.playlists.Thumbnails
 @Entity
 data class DetailsPlaylist(
     @PrimaryKey(autoGenerate = true)
-    val id: Int? = null,
+    val id: Int,
+    var playlistApiId: String? = null,
     var items: MutableList<DetailsItem>,
     var nextPageToken: String?
 )
@@ -20,5 +21,6 @@ data class DetailsSnippet(
     var title: String,
     var description: String,
     var publishedAt: String,
-    var thumbnails: Thumbnails
+    var thumbnails: Thumbnails,
+    var playlistId: String? = null
 )

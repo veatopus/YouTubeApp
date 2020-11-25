@@ -1,5 +1,6 @@
 package kg.geektech.ruslan.youtubeapp.repository
 
+import android.util.Log
 import androidx.lifecycle.liveData
 import kg.geektech.ruslan.youtubeapp.data.local.dao.DetailPlayListDao
 import kg.geektech.ruslan.youtubeapp.data.local.dao.PlayListDao
@@ -33,22 +34,6 @@ class YoutubeRepository(
         }
     }
 
-    fun fetchDetailsPlaylistById(playlistApiId: String, pageToken: String?, playlistDaoId: Int) =
-        liveData(Dispatchers.IO) {
-            emit(Resource.loading(data = null))
-            try {
-                val dataFromDao = detailPlayListDao.getDetailsPlaylistById(playlistDaoId)
-                emit(
-                    Resource.success(
-                        data = if (dataFromDao == null) dataFromDao
-                        else fetchDetailPlaylistsByNetwork(pageToken, playlistApiId, null)
-                    )
-                )
-            } catch (e: Exception) {
-                emit(Resource.error(data = null, message = e.message ?: "Error"))
-            }
-        }
-
     private suspend fun fetchPlaylistsByNetwork(
         pageToken: String?,
         data: MutableList<Playlists>
@@ -59,6 +44,24 @@ class YoutubeRepository(
             else data
         }
     }
+
+    fun fetchDetailsPlaylistById(playlistApiId: String, pageToken: String?, playlistDaoId: String) =
+        liveData(Dispatchers.IO) {
+            emit(Resource.loading(data = null))
+            try {
+                var data = detailPlayListDao.getDetailsPlaylistById(playlistDaoId)
+                Log.d("ofdpojga", "fetchDetailsPlaylistById: $data")
+                if (data == null) {
+                    data = fetchDetailPlaylistsByNetwork(pageToken, playlistApiId, null)
+                    data.playlistApiId = data.items[0].snippet.playlistId
+                    detailPlayListDao.insert(data)
+                }
+                emit(Resource.success(data = data))
+            } catch (e: Exception) {
+                e.printStackTrace()
+                emit(Resource.error(data = null, message = e.message ?: "Error"))
+            }
+        }
 
     private suspend fun fetchDetailPlaylistsByNetwork(
         pageToken: String?,
@@ -73,7 +76,6 @@ class YoutubeRepository(
             newData
         )
         else newData
-
     }
 
 }

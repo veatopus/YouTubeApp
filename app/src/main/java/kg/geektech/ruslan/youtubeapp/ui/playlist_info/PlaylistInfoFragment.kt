@@ -9,7 +9,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import kg.geektech.ruslan.youtubeapp.R
 import kg.geektech.ruslan.youtubeapp.core.BaseAdapter
+import kg.geektech.ruslan.youtubeapp.core.gone
 import kg.geektech.ruslan.youtubeapp.core.loadImage
+import kg.geektech.ruslan.youtubeapp.core.visible
 import kg.geektech.ruslan.youtubeapp.ui.playlist_info.adapter.ListInfoAdapter
 import kotlinx.android.synthetic.main.content_scrolling.*
 import kotlinx.android.synthetic.main.playlist_info_fragment.*
@@ -20,7 +22,7 @@ class PlaylistInfoFragment : Fragment(),
 
     private val mViewModel by inject<PlaylistInfoViewModel>()
     private var playlistId: String? = null
-    private var playlistPosition: Int? = null
+    private var playlistPosition: String? = null
     private val adapter = ListInfoAdapter()
 
     override fun onCreateView(
@@ -45,11 +47,15 @@ class PlaylistInfoFragment : Fragment(),
             adapter.data = detailsPlaylist.items
             adapter.notifyDataSetChanged()
         })
+        mViewModel.isLoading.observe(requireActivity(), Observer {
+            if (it) progress_bar.visible()
+            else progress_bar.gone()
+        })
     }
 
     private fun setUpData() {
         playlistId = arguments?.getString(KEY_PLAYLIST_ID)
-        playlistPosition = arguments?.getInt(KEY_PLAYLIST_POSITION)
+        playlistPosition = arguments?.getString(KEY_PLAYLIST_POSITION)
         toolbar_layout.title = arguments?.getString(KEY_PLAYLIST_TITLE)
         toolbar_layout.title =
             (toolbar_layout.title as String?)?.plus(

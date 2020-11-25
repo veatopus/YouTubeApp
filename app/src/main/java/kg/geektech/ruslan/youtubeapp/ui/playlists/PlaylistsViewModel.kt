@@ -10,12 +10,14 @@ import kg.geektech.ruslan.youtubeapp.repository.YoutubeRepository
 class PlaylistsViewModel(private var repository: YoutubeRepository) : ViewModel() {
     val mutableLiveDataListPlaylistItem =
         MutableLiveData<MutableList<PlaylistItem>>(mutableListOf())
+    val isLoading = MutableLiveData<Boolean>(false)
 
     fun fetchPlaylists(pageToken: String?) {
         val newData = mutableLiveDataListPlaylistItem.value
         repository.fetchPlaylists(pageToken).observeForever { result ->
             when (result.status) {
                 Status.SUCCESS -> {
+                    isLoading.value = false
                     for (i in result.data!!){
                         i.items?.let {
                             newData?.addAll(
@@ -24,8 +26,14 @@ class PlaylistsViewModel(private var repository: YoutubeRepository) : ViewModel(
                         }
                     }
                 }
-                Status.ERROR -> Log.e("ololo", "fetchPlaylists: ${result.message}")
-                Status.LOADING -> Log.d("ololo", "fetchPlaylists: ")
+                Status.ERROR -> {
+                    isLoading.value = false
+                    Log.e("ololo", "fetchPlaylists: ${result.message}")
+                }
+                Status.LOADING -> {
+                    isLoading.value = true
+                    Log.d("ololo", "fetchPlaylists: ")
+                }
             }
             mutableLiveDataListPlaylistItem.value = newData!!
         }
