@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">YouTubeApp</string>
+    <string name="playlist_hint_hint">"плейлисты "</string>
+    <string name="amount_video_example">"32 видео "</string>
+    <string name="playlist_description_example">"бла бла "</string>
+</resources>

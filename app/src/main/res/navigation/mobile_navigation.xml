@@ -8,8 +8,8 @@
     <fragment
         android:id="@+id/playListsFragment"
         android:name="kg.geektech.ruslan.youtubeapp.ui.playlists.PlaylistsFragment"
-        android:label="play_lists_fragment"
-        tools:layout="@layout/playlists_fragment" >
+        android:label="@string/playlist_hint_hint"
+        tools:layout="@layout/playlists_fragment">
         <action
             android:id="@+id/action_playListsFragment_to_playlistInfoFragment"
             app:destination="@id/playlistInfoFragment" />

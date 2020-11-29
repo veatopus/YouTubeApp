@@ -1,5 +1,8 @@
 package kg.geektech.ruslan.youtubeapp.core
 
+import android.R
+import android.content.Context
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.viewbinding.ViewBinding
+import java.util.*
 
 
 abstract class BaseFragment<V : BaseViewModel, B : ViewBinding>(val layoutID: Int) : Fragment() {
@@ -51,4 +55,19 @@ abstract class BaseFragment<V : BaseViewModel, B : ViewBinding>(val layoutID: In
 
     abstract fun setUpViewModelObs(viewModel: V)
 
+    override fun onResume() {
+        val locate = "de" // load in Prefs
+        setLocale(locate, requireContext())
+        super.onResume()
+    }
+
+    private fun setLocale(s: String, context:Context) {
+        val locale = Locale(s)
+        Locale.setDefault(locale)
+        val config = Configuration()
+        config.locale = locale
+        context.resources.updateConfiguration(
+            config,
+            context.resources.displayMetrics)
+    }
 }
