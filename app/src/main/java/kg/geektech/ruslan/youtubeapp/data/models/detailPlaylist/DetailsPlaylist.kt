@@ -22,5 +22,10 @@ data class DetailsSnippet(
     var description: String,
     var publishedAt: String,
     var thumbnails: Thumbnails,
-    var playlistId: String? = null
+    var playlistId: String? = null,
+    var resourceId: ResourceId? = null
+)
+
+data class ResourceId(
+    var videoId: String? = null
 )

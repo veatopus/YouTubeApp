@@ -1,6 +1,5 @@
 package kg.geektech.ruslan.youtubeapp.repository
 
-import android.util.Log
 import androidx.lifecycle.liveData
 import kg.geektech.ruslan.youtubeapp.data.local.dao.DetailPlayListDao
 import kg.geektech.ruslan.youtubeapp.data.local.dao.PlayListDao
@@ -47,7 +46,6 @@ class YoutubeRepository(
         pageToken: String?,
         data: MutableList<Playlists>
     ): MutableList<Playlists>? {
-        Log.d("dghf", "fetchPlaylistsByNetwork: ")
         val newData = api.fetchPlaylists(part, pageToken, key, channelId)
         if (newData != null) {
             newData.also {
@@ -65,7 +63,7 @@ class YoutubeRepository(
         liveData(Dispatchers.IO) {
             emit(Resource.loading(data = null))
             try {
-                updateDAtaDetailPlaylist(pageToken, playlistApiId)
+                updateDataDetailPlaylist(pageToken, playlistApiId)
                 emit(Resource.success(data = detailPlayListDao.getDetailsPlaylistById(playlistDaoId)))
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -73,20 +71,19 @@ class YoutubeRepository(
             }
         }
 
-    private suspend fun updateDAtaDetailPlaylist(
+    private suspend fun updateDataDetailPlaylist(
         pageToken: String?,
         playlistApiId: String
     ) {
         var data: DetailsPlaylist? = null
         try {
             data = fetchDetailPlaylistsByNetwork(pageToken, playlistApiId, null)
-        } catch (ignore: Exception) {
-
-        } finally {
-            if (data != null) {
-                data.playlistApiId = data.items[0].snippet.playlistId
-                detailPlayListDao.insertDetailsPlaylist(data)
-            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        data?.let {
+            data.playlistApiId = data.items[0].snippet.playlistId
+            detailPlayListDao.insertDetailsPlaylist(data)
         }
     }
 

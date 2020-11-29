@@ -1,56 +1,27 @@
 package kg.geektech.ruslan.youtubeapp.ui.playlist_info
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import kg.geektech.ruslan.youtubeapp.R
-import kg.geektech.ruslan.youtubeapp.core.BaseAdapter
-import kg.geektech.ruslan.youtubeapp.core.gone
-import kg.geektech.ruslan.youtubeapp.core.loadImage
-import kg.geektech.ruslan.youtubeapp.core.visible
+import kg.geektech.ruslan.youtubeapp.core.*
 import kg.geektech.ruslan.youtubeapp.data.models.detailPlaylist.DetailsItem
+import kg.geektech.ruslan.youtubeapp.databinding.PlaylistInfoFragmentBinding
 import kg.geektech.ruslan.youtubeapp.ui.playlist_info.adapter.ListInfoAdapter
+import kg.geektech.ruslan.youtubeapp.ui.video_info.VideoInfoFragment
 import kotlinx.android.synthetic.main.content_scrolling.*
 import kotlinx.android.synthetic.main.playlist_info_fragment.*
 import org.koin.android.ext.android.inject
 
-class PlaylistInfoFragment : Fragment(),
+class PlaylistInfoFragment :
+    BaseFragment<PlaylistInfoViewModel, PlaylistInfoFragmentBinding>(R.layout.playlist_info_fragment),
     BaseAdapter.IBaseAdapterClickListener {
 
-    private val mViewModel by inject<PlaylistInfoViewModel>()
     private var playlistId: String? = null
     private var playlistPosition: String? = null
     private val adapter = ListInfoAdapter()
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.playlist_info_fragment, container, false)
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        (requireActivity() as AppCompatActivity).setSupportActionBar(toolbar)
-        setUpObserve()
-        setUpData()
-        setUpRecycler()
-    }
-
-    private fun setUpObserve() {
-        mViewModel.playListItems.observe(requireActivity(), Observer { detailsPlaylist ->
-            detailsPlaylist.items[0].snippet.thumbnails.medium?.url?.let { image_view.loadImage(it) }
-            updateItems(detailsPlaylist.items)
-        })
-        mViewModel.isLoading.observe(requireActivity(), Observer {
-            if (it) progress_bar.visible()
-            else progress_bar.gone()
-        })
-    }
 
     private fun updateItems(items: MutableList<DetailsItem>) {
         adapter.data = mutableListOf()
@@ -75,14 +46,46 @@ class PlaylistInfoFragment : Fragment(),
         playListsInfoFragment_recyclerview.adapter = adapter
         playlistId?.let { playlistId ->
             playlistPosition?.let {
-                mViewModel.fetchPlaylistById(playlistId, null, it)
+                mViewModule?.fetchPlaylistById(playlistId, null, it)
             }
         }
     }
 
     override fun onClick(pos: Int) {
-        TODO("ADD ITEM IFO")
+        findNavController().navigate(R.id.videoInfoFragment, Bundle().also {
+            it.putString(VideoInfoFragment.VIDEO_ID, adapter.data[pos].snippet.resourceId?.videoId)
+            it.putString(VideoInfoFragment.TITLE, adapter.data[pos].snippet.title)
+            it.putString(VideoInfoFragment.DESCRIPTION, adapter.data[pos].snippet.description)
+        })
     }
+
+    override fun setUpView(binding: PlaylistInfoFragmentBinding) {
+        setUpData()
+        setUpRecycler()
+    }
+
+    override fun setUpViewModelObs(viewModel: PlaylistInfoViewModel) {
+        mViewModule?.playListItems?.observe(requireActivity(), Observer { detailsPlaylist ->
+            detailsPlaylist.items[0].snippet.thumbnails.medium?.url?.let { image_view.loadImage(it) }
+            updateItems(detailsPlaylist.items)
+        })
+        mViewModule?.isLoading?.observe(requireActivity(), Observer {
+            if (it) progress_bar.visible()
+            else progress_bar.gone()
+        })
+    }
+
+    override fun progress(isProgress: Boolean) {
+        if (isProgress) binding?.progressBar?.visible()
+        else binding?.progressBar?.gone()
+    }
+
+    override fun getViewModule(): PlaylistInfoViewModel = inject<PlaylistInfoViewModel>().value
+
+    override fun getViewBinding(): PlaylistInfoFragmentBinding =
+        PlaylistInfoFragmentBinding.inflate(
+            LayoutInflater.from(requireContext())
+        )
 
     companion object {
         const val KEY_PLAYLIST_ID = "CEY_PLAYLIST_ID"

@@ -9,10 +9,23 @@
         android:id="@+id/playListsFragment"
         android:name="kg.geektech.ruslan.youtubeapp.ui.playlists.PlaylistsFragment"
         android:label="play_lists_fragment"
-        tools:layout="@layout/playlists_fragment" />
+        tools:layout="@layout/playlists_fragment" >
+        <action
+            android:id="@+id/action_playListsFragment_to_playlistInfoFragment"
+            app:destination="@id/playlistInfoFragment" />
+    </fragment>
     <fragment
         android:id="@+id/playlistInfoFragment"
         android:name="kg.geektech.ruslan.youtubeapp.ui.playlist_info.PlaylistInfoFragment"
-        android:label="PlaylistInfoFragment" />
+        android:label="PlaylistInfoFragment" >
+        <action
+            android:id="@+id/action_playlistInfoFragment_to_videoInfoFragment"
+            app:destination="@id/videoInfoFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/videoInfoFragment"
+        android:name="kg.geektech.ruslan.youtubeapp.ui.video_info.VideoInfoFragment"
+        android:label="video_info_fragment"
+        tools:layout="@layout/video_info_fragment" />
 
 </navigation>
