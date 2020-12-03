@@ -1,4 +1,4 @@
-package kg.geektech.ruslan.youtubeapp.repository
+package kg.geektech.ruslan.youtubeapp.data.repository
 
 import androidx.lifecycle.liveData
 import kg.geektech.ruslan.youtubeapp.data.local.dao.DetailPlayListDao
@@ -34,6 +34,7 @@ class YoutubeRepository(
         try {
             playlists = fetchPlaylistsByNetwork(pageToken, mutableListOf())
         } catch (ignore: Exception) {
+
         }
 
         if (playlists != null) {
@@ -59,12 +60,12 @@ class YoutubeRepository(
         } else return null
     }
 
-    fun fetchDetailsPlaylistById(playlistApiId: String, pageToken: String?, playlistDaoId: String) =
+    fun fetchDetailsPlaylistById(pageToken: String?, playlistId: String) =
         liveData(Dispatchers.IO) {
             emit(Resource.loading(data = null))
             try {
-                updateDataDetailPlaylist(pageToken, playlistApiId)
-                emit(Resource.success(data = detailPlayListDao.getDetailsPlaylistById(playlistDaoId)))
+                updateDataDetailPlaylist(pageToken, playlistId)
+                emit(Resource.success(data = detailPlayListDao.getDetailsPlaylistById(playlistId)))
             } catch (e: Exception) {
                 e.printStackTrace()
                 emit(Resource.error(data = null, message = e.message ?: "Error"))
@@ -73,16 +74,16 @@ class YoutubeRepository(
 
     private suspend fun updateDataDetailPlaylist(
         pageToken: String?,
-        playlistApiId: String
+        playlistId: String
     ) {
         var data: DetailsPlaylist? = null
         try {
-            data = fetchDetailPlaylistsByNetwork(pageToken, playlistApiId, null)
+            data = fetchDetailPlaylistsByNetwork(pageToken, playlistId, null)
         } catch (e: Exception) {
             e.printStackTrace()
         }
-        data?.let {
-            data.playlistApiId = data.items[0].snippet.playlistId
+        if (data != null) {
+            data.playlistApiId = data.items[0].snippet.playlistId.toString()
             detailPlayListDao.insertDetailsPlaylist(data)
         }
     }

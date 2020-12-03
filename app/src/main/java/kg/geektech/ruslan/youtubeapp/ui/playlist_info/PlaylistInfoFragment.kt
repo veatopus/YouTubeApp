@@ -1,13 +1,14 @@
 package kg.geektech.ruslan.youtubeapp.ui.playlist_info
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import kg.geektech.ruslan.youtubeapp.R
 import kg.geektech.ruslan.youtubeapp.core.*
 import kg.geektech.ruslan.youtubeapp.data.models.detailPlaylist.DetailsItem
+import kg.geektech.ruslan.youtubeapp.data.models.detailPlaylist.DetailsPlaylist
+import kg.geektech.ruslan.youtubeapp.data.models.playlists.PlaylistItem
 import kg.geektech.ruslan.youtubeapp.databinding.PlaylistInfoFragmentBinding
 import kg.geektech.ruslan.youtubeapp.ui.playlist_info.adapter.ListInfoAdapter
 import kg.geektech.ruslan.youtubeapp.ui.video_info.VideoInfoFragment
@@ -17,10 +18,10 @@ import org.koin.android.ext.android.inject
 
 class PlaylistInfoFragment :
     BaseFragment<PlaylistInfoViewModel, PlaylistInfoFragmentBinding>(R.layout.playlist_info_fragment),
-    BaseAdapter.IBaseAdapterClickListener {
+    BaseAdapter.IBaseAdapterClickListener<DetailsItem> {
 
+    private var detailsPlaylist: DetailsPlaylist? = null
     private var playlistId: String? = null
-    private var playlistPosition: String? = null
     private val adapter = ListInfoAdapter()
 
     private fun updateItems(items: MutableList<DetailsItem>) {
@@ -30,32 +31,23 @@ class PlaylistInfoFragment :
     }
 
     private fun setUpData() {
-        playlistId = arguments?.getString(KEY_PLAYLIST_ID)
-        playlistPosition = arguments?.getString(KEY_PLAYLIST_POSITION)
-        toolbar_layout.title = arguments?.getString(KEY_PLAYLIST_TITLE)
-        toolbar_layout.title =
-            (toolbar_layout.title as String?)?.plus(
-                ("\n\n${arguments?.getString(
-                    KEY_PLAYLIST_DESCRIPTION
-                )}")
-            )
+        val playlist: PlaylistItem? = arguments?.getSerializable(KEY_PLAYLIST) as PlaylistItem?
+        playlistId = playlist?.id
+        toolbar_layout.title = playlist?.snippet?.title
     }
 
     private fun setUpRecycler() {
         adapter.listener = this
         playListsInfoFragment_recyclerview.adapter = adapter
         playlistId?.let { playlistId ->
-            playlistPosition?.let {
-                mViewModule?.fetchPlaylistById(playlistId, null, it)
-            }
+            mViewModule?.fetchPlaylistById(playlistId, null)
         }
     }
 
-    override fun onClick(pos: Int) {
+    override fun onClick(model: DetailsItem) {
         findNavController().navigate(R.id.videoInfoFragment, Bundle().also {
-            it.putString(VideoInfoFragment.VIDEO_ID, adapter.data[pos].snippet.resourceId?.videoId)
-            it.putString(VideoInfoFragment.TITLE, adapter.data[pos].snippet.title)
-            it.putString(VideoInfoFragment.DESCRIPTION, adapter.data[pos].snippet.description)
+            it.putSerializable(VideoInfoFragment.VIDEOS, detailsPlaylist)
+            it.putString(VideoInfoFragment.FIRST_VIDEO_ID, model.snippet.resourceId?.videoId)
         })
     }
 
@@ -66,6 +58,7 @@ class PlaylistInfoFragment :
 
     override fun setUpViewModelObs(viewModel: PlaylistInfoViewModel) {
         mViewModule?.playListItems?.observe(requireActivity(), Observer { detailsPlaylist ->
+            this.detailsPlaylist = detailsPlaylist
             detailsPlaylist.items[0].snippet.thumbnails.medium?.url?.let { image_view.loadImage(it) }
             updateItems(detailsPlaylist.items)
         })
@@ -88,9 +81,6 @@ class PlaylistInfoFragment :
         )
 
     companion object {
-        const val KEY_PLAYLIST_ID = "CEY_PLAYLIST_ID"
-        const val KEY_PLAYLIST_TITLE = "CEY_PLAYLIST_TITLE"
-        const val KEY_PLAYLIST_DESCRIPTION = "CEY_PLAYLIST_DESCRIPTION"
-        const val KEY_PLAYLIST_POSITION = "CEY_PLAYLIST_POSITION"
+        const val KEY_PLAYLIST = "KEY_PLAYLIST"
     }
 }

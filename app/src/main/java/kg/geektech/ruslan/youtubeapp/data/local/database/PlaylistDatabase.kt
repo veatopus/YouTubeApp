@@ -10,7 +10,7 @@ import kg.geektech.ruslan.youtubeapp.data.local.dao.PlayListDao
 import kg.geektech.ruslan.youtubeapp.data.models.detailPlaylist.DetailsPlaylist
 import kg.geektech.ruslan.youtubeapp.data.models.playlists.Playlists
 
-@Database(entities = [Playlists::class, DetailsPlaylist::class], version = 1)
+@Database(entities = [Playlists::class, DetailsPlaylist::class], version = 1, exportSchema = false)
 @TypeConverters(PlaylistItemsConverter::class, DetailsPlaylistConverter::class)
 abstract class PlaylistDatabase : RoomDatabase() {
     abstract fun playlistDao(): PlayListDao?

@@ -1,20 +1,27 @@
 package kg.geektech.ruslan.youtubeapp.ui.video_info
 
+import android.os.Bundle
 import android.view.LayoutInflater
+import androidx.lifecycle.Observer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
 import kg.geektech.ruslan.youtubeapp.R
+import kg.geektech.ruslan.youtubeapp.core.BaseAdapter
 import kg.geektech.ruslan.youtubeapp.core.BaseFragment
 import kg.geektech.ruslan.youtubeapp.core.gone
 import kg.geektech.ruslan.youtubeapp.core.visible
+import kg.geektech.ruslan.youtubeapp.data.models.detailPlaylist.DetailsItem
+import kg.geektech.ruslan.youtubeapp.data.models.detailPlaylist.DetailsPlaylist
 import kg.geektech.ruslan.youtubeapp.databinding.VideoInfoFragmentBinding
+import kg.geektech.ruslan.youtubeapp.ui.bottom_sheet_dialog.BottomSheetPlaylistDialogFragment
 import org.koin.android.ext.android.inject
 
 class VideoInfoFragment :
-    BaseFragment<VideoInfoViewModel, VideoInfoFragmentBinding>(R.layout.video_info_fragment) {
+    BaseFragment<VideoInfoViewModel, VideoInfoFragmentBinding>(R.layout.video_info_fragment),
+    BaseAdapter.IBaseAdapterClickListener<DetailsItem> {
 
-    private var videoId: String? = null
-
+    private var youTubePlayer: YouTubePlayer? = null
+    private var bottomSheetPlaylistDialogFragment: BottomSheetPlaylistDialogFragment? = null
 
     override fun getViewModule(): VideoInfoViewModel = inject<VideoInfoViewModel>().value
 
@@ -23,20 +30,71 @@ class VideoInfoFragment :
     )
 
     override fun setUpView(binding: VideoInfoFragmentBinding) {
-        binding.textViewDescription.text = arguments?.getString(DESCRIPTION)
-        binding.textViewTitle.text = arguments?.getString(TITLE)
+        setUpData(arguments)
+        setUpYouTubePlayer()
+        setUpBtnShowPlaylist()
+    }
 
-        videoId = arguments?.getString(VIDEO_ID)
+    private fun setUpBtnShowPlaylist() {
+        binding?.btnShowPlaylist?.setOnClickListener {
+            bottomSheetPlaylistDialogFragment?.let {
+                showSheet()
+            }
+        }
+    }
 
-        binding.youtubePlayer.addYouTubePlayerListener(object : AbstractYouTubePlayerListener() {
+    private fun setUpBottomSheet(detailsPlaylist: DetailsPlaylist) {
+        bottomSheetPlaylistDialogFragment =
+            BottomSheetPlaylistDialogFragment(detailsPlaylist, this)
+    }
+
+    private fun showSheet() {
+        bottomSheetPlaylistDialogFragment?.show(
+            childFragmentManager,
+            bottomSheetPlaylistDialogFragment!!.tag
+        )
+    }
+
+    private fun setUpYouTubePlayer() {
+        binding?.youtubePlayer?.addYouTubePlayerListener(object : AbstractYouTubePlayerListener() {
             override fun onReady(youTubePlayer: YouTubePlayer) {
-                videoId?.let { youTubePlayer.loadVideo(it, 0f) }
+                this@VideoInfoFragment.youTubePlayer = youTubePlayer
+                mViewModule?.firsVideoId?.let { youTubePlayer.loadVideo(it, 0f) }
+            }
+
+            override fun onCurrentSecond(youTubePlayer: YouTubePlayer, second: Float) {
+                mViewModule?.changeLastSecond(second)
             }
         })
     }
 
-    override fun setUpViewModelObs(viewModel: VideoInfoViewModel) {
+    private fun updateData(currentVideo: DetailsItem, startVideoSecond: Float) {
+        binding?.textViewDescription?.text = currentVideo.snippet.description
+        binding?.textViewTitle?.text = currentVideo.snippet.title
 
+        currentVideo.snippet.resourceId?.videoId?.let {
+            youTubePlayer?.loadVideo(
+                it,
+                startVideoSecond
+            )
+        }
+    }
+
+    private fun setUpData(arguments: Bundle?) {
+        arguments?.let { arg ->
+            mViewModule?.setUpPlaylistData(arg.getSerializable(VIDEOS) as DetailsPlaylist)
+            mViewModule?.setUpFirstVideoId(arg.getString(FIRST_VIDEO_ID))
+        }
+    }
+
+    override fun setUpViewModelObs(viewModel: VideoInfoViewModel) {
+        viewModel.currentVideo.observe(requireActivity(), Observer {
+            updateData(it, it.startTime)
+        })
+        viewModel.detailsPlaylist.observe(requireActivity(), Observer {
+            setUpBottomSheet(it)
+            this.showSheet()
+        })
     }
 
     override fun progress(isProgress: Boolean) {
@@ -44,9 +102,22 @@ class VideoInfoFragment :
         else binding?.progressBar?.gone()
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        mViewModule?.currentVideo?.value?.startTime?.let { outState.putFloat("second", it) }
+    }
+
+    override fun onRestoreInstanceState(saveInstanceState: Bundle) {
+        super.onRestoreInstanceState(saveInstanceState)
+        mViewModule?.changeLastSecond(saveInstanceState.getFloat("second"))
+    }
+
     companion object {
-        const val DESCRIPTION = "DESCRIPTION"
-        const val TITLE = "TITLE"
-        const val VIDEO_ID = "VIDEO_ID"
+        const val VIDEOS = "VIDEO_ID"
+        const val FIRST_VIDEO_ID = "FIRST_VIDEO_ID"
+    }
+
+    override fun onClick(model: DetailsItem) {
+        mViewModule?.changeVideo(model)
     }
 }

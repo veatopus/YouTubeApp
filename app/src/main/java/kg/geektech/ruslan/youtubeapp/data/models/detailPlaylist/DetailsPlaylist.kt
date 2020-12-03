@@ -3,6 +3,7 @@ package kg.geektech.ruslan.youtubeapp.data.models.detailPlaylist
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import kg.geektech.ruslan.youtubeapp.data.models.playlists.Thumbnails
+import java.io.Serializable
 
 @Entity
 data class DetailsPlaylist(
@@ -11,10 +12,12 @@ data class DetailsPlaylist(
     var playlistApiId: String? = null,
     var items: MutableList<DetailsItem>,
     var nextPageToken: String?
-)
+) : Serializable
 
 data class DetailsItem(
-    var snippet: DetailsSnippet
+    var snippet: DetailsSnippet,
+    var isChange: Boolean = false,
+    var startTime: Float = 0f
 )
 
 data class DetailsSnippet(

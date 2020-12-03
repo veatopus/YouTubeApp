@@ -4,4 +4,5 @@
     <string name="playlist_name_example" translatable="false">Emotional Well-being &amp; Healing Practices for Children</string>
     <string name="amount_video_example" translatable="false">32 video series</string>
     <string name="playlist_description_example" translatable="false">In this series, we break down the impact of displacement, instability, violence, and trauma in children, and offer exercises to support children in their healing journey.</string>
+    <string name="show_playlist">show playlist</string>
 </resources>

@@ -5,21 +5,20 @@ import androidx.lifecycle.MutableLiveData
 import kg.geektech.ruslan.youtubeapp.core.BaseViewModel
 import kg.geektech.ruslan.youtubeapp.data.models.detailPlaylist.DetailsPlaylist
 import kg.geektech.ruslan.youtubeapp.data.network.Status
-import kg.geektech.ruslan.youtubeapp.repository.YoutubeRepository
+import kg.geektech.ruslan.youtubeapp.data.repository.YoutubeRepository
 
-class PlaylistInfoViewModel(var repository: YoutubeRepository) : BaseViewModel() {
+class PlaylistInfoViewModel(private var repository: YoutubeRepository) : BaseViewModel() {
     var playListItems = MutableLiveData<DetailsPlaylist>()
 
-    fun fetchPlaylistById(playlistApi: String, pageToken: String?, playlistDao: String) {
-        repository.fetchDetailsPlaylistById(playlistApi, pageToken, playlistDao)
+    fun fetchPlaylistById(playlistId: String, pageToken: String?) {
+        repository.fetchDetailsPlaylistById(pageToken, playlistId)
             .observeForever { resource ->
+                if (resource.status == Status.SUCCESS)
+                    playListItems.value = resource.data!!
+
                 when (resource.status) {
-                    Status.SUCCESS -> {
-                        playListItems.value = resource.data!!
-                        isLoading.value = false
-                    }
                     Status.LOADING -> isLoading.value = true
-                    Status.ERROR -> isLoading.value = false
+                    else -> isLoading.value = false
                 }
             }
     }

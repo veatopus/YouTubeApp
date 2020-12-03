@@ -1,6 +1,5 @@
 package kg.geektech.ruslan.youtubeapp.core
 
-import android.R
 import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
@@ -27,8 +26,13 @@ abstract class BaseFragment<V : BaseViewModel, B : ViewBinding>(val layoutID: In
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        if (savedInstanceState != null) onRestoreInstanceState(savedInstanceState)
         binding = getViewBinding()
         return binding?.root
+    }
+
+    open fun onRestoreInstanceState(saveInstanceState: Bundle){
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -56,7 +60,7 @@ abstract class BaseFragment<V : BaseViewModel, B : ViewBinding>(val layoutID: In
     abstract fun setUpViewModelObs(viewModel: V)
 
     override fun onResume() {
-        val locate = "de" // load in Prefs
+        val locate = "ru" // load in Prefs
         setLocale(locate, requireContext())
         super.onResume()
     }
@@ -70,4 +74,5 @@ abstract class BaseFragment<V : BaseViewModel, B : ViewBinding>(val layoutID: In
             config,
             context.resources.displayMetrics)
     }
+
 }

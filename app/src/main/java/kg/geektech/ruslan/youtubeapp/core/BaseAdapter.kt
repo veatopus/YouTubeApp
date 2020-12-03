@@ -11,7 +11,7 @@ abstract class BaseAdapter<T>(
 ) :
     RecyclerView.Adapter<BaseAdapter<T>.BaseViewHolder>() {
 
-    var listener: IBaseAdapterClickListener? = null
+    var listener: IBaseAdapterClickListener<T>? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
         return BaseViewHolder(
@@ -35,12 +35,12 @@ abstract class BaseAdapter<T>(
             onBind(itemView, model)
 
             itemView.setOnClickListener {
-                listener?.onClick(adapterPosition)
+                listener?.onClick(data[adapterPosition])
             }
         }
     }
 
-    interface IBaseAdapterClickListener {
-        fun onClick(pos: Int)
+    interface IBaseAdapterClickListener<T> {
+        fun onClick(model: T)
     }
 }

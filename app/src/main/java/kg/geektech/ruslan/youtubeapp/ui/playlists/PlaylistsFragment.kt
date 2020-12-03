@@ -9,6 +9,7 @@ import kg.geektech.ruslan.youtubeapp.core.BaseAdapter
 import kg.geektech.ruslan.youtubeapp.core.BaseFragment
 import kg.geektech.ruslan.youtubeapp.core.gone
 import kg.geektech.ruslan.youtubeapp.core.visible
+import kg.geektech.ruslan.youtubeapp.data.models.playlists.PlaylistItem
 import kg.geektech.ruslan.youtubeapp.databinding.PlaylistsFragmentBinding
 import kg.geektech.ruslan.youtubeapp.ui.playlist_info.PlaylistInfoFragment
 import kg.geektech.ruslan.youtubeapp.ui.playlists.adapter.ListAdapter
@@ -17,7 +18,7 @@ import org.koin.android.ext.android.inject
 
 class PlaylistsFragment :
     BaseFragment<PlaylistsViewModel, PlaylistsFragmentBinding>(R.layout.playlists_fragment),
-    BaseAdapter.IBaseAdapterClickListener {
+    BaseAdapter.IBaseAdapterClickListener<PlaylistItem> {
 
     private val adapter = ListAdapter()
 
@@ -48,25 +49,13 @@ class PlaylistsFragment :
         else binding?.progressBar?.gone()
     }
 
-    override fun onClick(pos: Int) {
+    override fun onClick(model: PlaylistItem) {
         findNavController()
             .navigate(
                 R.id.playlistInfoFragment,
                 Bundle()
                     .also {
-                        it.putString(PlaylistInfoFragment.KEY_PLAYLIST_ID, adapter.data[pos].id)
-                        it.putString(
-                            PlaylistInfoFragment.KEY_PLAYLIST_TITLE,
-                            adapter.data[pos].snippet?.title
-                        )
-                        it.putString(
-                            PlaylistInfoFragment.KEY_PLAYLIST_DESCRIPTION,
-                            adapter.data[pos].snippet?.description
-                        )
-                        it.putString(
-                            PlaylistInfoFragment.KEY_PLAYLIST_POSITION,
-                            adapter.data[pos].id
-                        )
+                        it.putSerializable(PlaylistInfoFragment.KEY_PLAYLIST, model)
                     }
             )
     }
